@@ -1,16 +1,17 @@
 import { randomUUID } from "crypto";
 import fastify from "fastify";
+import cookie from '@fastify/cookie'
 import { env } from './env/index'
 import { knex } from "./database";
+import { transactionsRoutes } from "./routes/transactions";
+
 const app = fastify();
 
-app.get("/hello", async () => {
-  const transactions = await knex("transactions")
-  .where('amount', 500).
-  select("*");
-
-  return transactions;
-});
+// Adicionado plugin de cookie antes de usar ele
+app.register(cookie)
+app.register(transactionsRoutes, {
+  prefix: 'transactions'
+})
 
 app
   .listen({
